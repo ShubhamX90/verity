@@ -81,9 +81,15 @@ Verity makes no assumptions about which conference or workshop a paper targets. 
 
 ```
 venues/
-├── iclr2027.md      # populated — the reference implementation of the profile schema
-├── acl2026.md       # add as needed
-└── emnlp2025.md     # add as needed
+├── iclr2027.md      # populated, live-verified
+├── neurips2026.md   # populated, live-verified
+├── icml2026.md      # populated, live-verified
+├── colm2026.md      # populated, live-verified
+├── acl2026.md       # populated, live-verified
+├── emnlp2026.md     # populated, live-verified
+├── naacl2027.md     # populated, live-verified
+├── aaai2027.md      # populated, live-verified
+└── <venue><year>.md # add as needed, same method
 ```
 
 Building a new profile follows the same method used to build the first one: locate the venue's official call-for-papers and author-guidelines pages, fetch them directly, and populate the profile — never reconstruct policy from memory or a prior year's cached understanding. The full mechanism is documented in [`references/venue-profile.md`](references/venue-profile.md).
@@ -157,7 +163,7 @@ verity/
 │   ├── rebuttal.md             #   Deliberate stub — see "What isn't built yet"
 │   └── prose-editing-policy.md
 ├── scripts/                    # 11 scripts, stdlib-only Python / portable Bash
-├── venues/                     # Populated venue profiles (ICLR 2027 ships as the reference example)
+├── venues/                     # 8 populated venue profiles: ICLR, NeurIPS, ICML, COLM, ACL, EMNLP, NAACL, AAAI
 └── templates/                  # Official LaTeX kits, one directory per venue-year
 ```
 
@@ -187,7 +193,7 @@ Verity was synthesized from a structured audit of ten existing Claude Code skill
 - **[`MagicMonkey-XK/latex-precision-skill`](https://github.com/MagicMonkey-XK/latex-precision-skill)** — the no-bulk-regex editing constraint.
 - **[`JeanDiable/academic-research-plugin`](https://github.com/JeanDiable/academic-research-plugin)** — the per-venue mock-review schemas.
 - **[`minhuw/claude-writer`](https://github.com/minhuw/claude-writer)** (`polish` skill) — the non-native-English grammar/register rules.
-- **davila7/claude-code-templates** (`ml-paper-writing`) — the citation-verification API workflow and writing-craft synthesis (Gopen & Swan, Farquhar, Lipton, Steinhardt).
+- **davila7/claude-code-templates** (`ml-paper-writing`) — the citation-verification API workflow, writing-craft synthesis (Gopen & Swan, Farquhar, Lipton, Steinhardt), and the template-pitfalls checklist. Its per-venue table and citation-error-rate figure were unsourced starting points, not final content — both were independently re-derived from primary sources (live venue policy pages; peer-reviewed citation-fabrication studies) rather than copied.
 - **`lingzhi227/agent-research-skills`** — figure/table generation and backward-traceability conventions.
 - **`rzyu45/response-letter-bootstrap-skill`** and **`andikarachman/data-science-plugin`** (`reproducibility-checklist`) — informing the (respectively deferred and shipped) rebuttal and reproducibility-audit designs.
 
@@ -196,7 +202,7 @@ Every adaptation was fixed, tested against constructed edge cases, and — where
 ## Contributing
 
 Issues and pull requests are welcome — particularly:
-- A new populated venue profile under `venues/` (follow the schema in `references/venue-profile.md`)
+- A new populated venue profile under `venues/` for a venue not yet covered (CVPR, ICCV, KDD, AISTATS, etc.), or a re-verification pass on an existing one once its next cycle's CFP goes live (follow the schema in `references/venue-profile.md`)
 - A verified per-venue mock-review schema for any venue currently unverified in `references/mock-review.md`
 - Figure/diagram generation (currently checker-only, not generator — see `references/figures-tables-diagrams.md`)
 

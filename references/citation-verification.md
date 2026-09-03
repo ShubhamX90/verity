@@ -1,6 +1,16 @@
 # Citation verification workflow
 
-**The single non-negotiable rule in this whole skill: never write a BibTeX entry from memory.** AI-generated citations run a high fabrication/error rate, and a fabricated reference in a submitted paper can be a Code of Ethics matter at many venues, not a typo — check the active venue profile's AI-policy section (`venue-profile.md`) for the specific consequence language, if the venue has one. This rule has no exceptions and no autonomy tier discussion regardless of what a specific venue's policy says: it's not something that gets more permissive under Tier A.
+**The single non-negotiable rule in this whole skill: never write a BibTeX entry from memory.** Peer-reviewed studies have measured LLM-generated academic citations as fabricated (referring to a paper that doesn't exist at all) at rates from roughly 18% up to 55%+ depending on the model, with additional real citations still carrying substantive metadata errors on top of that — see "Why this rule exists, with sources" below. A fabricated reference in a submitted paper can be a Code of Ethics matter at many venues, not a typo — check the active venue profile's AI-policy section (`venue-profile.md`) for the specific consequence language, if the venue has one. This rule has no exceptions and no autonomy tier discussion regardless of what a specific venue's policy says: it's not something that gets more permissive under Tier A.
+
+### Why this rule exists, with sources
+
+Rates vary by model, task, and domain — there is no single universal "AI citation error rate," and any claim stating one flat number should be treated skeptically (including a commonly-repeated "~40%" figure, which traces to real studies but is a rounded average across specific models/tasks, not a fixed constant):
+
+- Walters & Wilder, *Scientific Reports* 13:14045 (2023) — 636 citations, 42 topics: **55% of GPT-3.5 citations fully fabricated vs. 18% of GPT-4 citations**; among the *real* (non-fabricated) citations, 43% (GPT-3.5) and 24% (GPT-4) still had substantive errors (wrong volume, issue, pages, authors).
+- Chelli et al., *Journal of Medical Internet Research* (2024), systematic-review literature retrieval: **GPT-3.5 39.6% hallucinated, GPT-4 28.6%, Bard 91.4%**; precision (references that actually existed in the source material) as low as 9–13% for the weakest model.
+- Cabezas-Clavijo & Sidorenko-Bautista (2025), arXiv:2505.18059, 8 chatbots (ChatGPT, Claude, Copilot, DeepSeek, Gemini, Grok, Le Chat, Perplexity), 400 references: 26.5% fully correct, 33.8% partially correct, **39.8% erroneous or fabricated** — this is the specific study a commonly-quoted "~40% of AI citations are wrong" figure traces back to.
+
+The clear trend across all of these: newer/larger models fabricate less (GPT-3.5-era ~55% down to GPT-4-era ~18–29%), but the rate never reaches zero for any model measured, and even a *correctly-existing* citation still carries a meaningful chance of a wrong claim attribution or wrong bibliographic detail. That residual, non-zero rate at every model tier — not a specific number from a specific year — is the actual justification for treating every single citation as unverified until checked, regardless of which model produced it or how capable that model is generally.
 
 ## API stack (v1 — deliberately minimal)
 

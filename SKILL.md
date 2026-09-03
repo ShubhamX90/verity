@@ -87,7 +87,7 @@ Every script under `scripts/` is adapted from source material, not copied verbat
 
 ## Templates
 
-`templates/<venue><year>/` — one directory per venue-year, mirroring the `venues/` profile structure. `templates/iclr2027/` is the first one, the official kit fetched directly from `github.com/ICLR/Master-Template`. Copy the whole directory when starting a new paper from a template; never edit the `.sty`/`.bst` files directly, and never work from just the `.tex` file with the style files elsewhere. Adding a new venue's template follows the same method: fetch it from its official source repository, don't reconstruct it from memory.
+`templates/<venue><year>/` — one directory per venue-year, mirroring the `venues/` profile structure, each fetched directly from its official source repository: `templates/iclr2027/` (`github.com/ICLR/Master-Template`), `templates/neurips2026/`, `templates/icml2026/`, `templates/colm2026/`, `templates/aaai2027/`. ACL, EMNLP, and NAACL share one official style-file package rather than each getting a duplicate copy — `templates/acl-style-files/` (`github.com/acl-org/acl-style-files`) — since the venue profiles for that family (`venues/acl2026.md`, `venues/emnlp2026.md`, `venues/naacl2027.md`) confirmed the underlying kit really is identical across all three. Copy the whole relevant directory when starting a new paper from a template; never edit the `.sty`/`.bst` files directly, and never work from just the `.tex` file with the style files elsewhere. Adding a new venue's template follows the same method: fetch it from its official source repository, don't reconstruct it from memory.
 
 ## Figures/tables/diagrams subfolder mapping
 

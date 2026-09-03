@@ -6,7 +6,7 @@ This skill is not specific to any one conference or workshop. It works the same 
 
 ## Where profiles live
 
-`venues/<venue><year>.md`, lowercase, no separator — `venues/iclr2027.md`, `venues/acl2026.md`, `venues/emnlp2025.md`, `venues/colm2026.md`, `venues/naacl2026.md`. One file per venue-year; a venue you use across multiple years gets multiple files (policies change year to year — never assume last year's profile still applies).
+`venues/<venue><year>.md`, lowercase, no separator — e.g. `venues/iclr2027.md`, `venues/acl2026.md`, `venues/emnlp2026.md`, `venues/colm2026.md`, `venues/naacl2027.md`, `venues/neurips2026.md`, `venues/icml2026.md`, `venues/aaai2027.md` (all eight already populated). One file per venue-year; a venue you use across multiple years gets multiple files (policies change year to year — never assume last year's profile still applies). Use the venue's own self-declared year for the filename, not necessarily the calendar year of the review cycle that fed it — `venues/naacl2027.md` documents this exact case, where NAACL's own numbering names the conference a year ahead of the ARR cycle behind it.
 
 ## Establishing the active profile for a session
 

@@ -50,3 +50,15 @@ This is a **Tier A, read-only** workflow — it produces a diff/PDF for you to l
 ## Compilation
 
 Always compile before judging layout — never assess figure placement, page count, or overfull boxes from the raw `.tex` source. `scripts/compile_check.sh` handles engine auto-detection, multi-pass compilation, and translates raw log errors into plain language. Its auto-fix behaviors (adding a missing float placement specifier, injecting `microtype` when overfull-hbox warnings appear) are Tier A — but still applied via individual `Edit` calls to the specific flagged line, never a blanket rewrite of the file, per the no-bulk-regex rule above.
+
+## Template pitfalls (starting a new paper from a venue's official kit)
+
+Five recurring failure modes when a paper repo is first set up from `templates/<venue><year>/` — each has already caused a real broken submission somewhere, which is why they're listed explicitly rather than left as "use common sense":
+
+| Pitfall | What breaks | What to do instead |
+|---|---|---|
+| Copying only the `.tex` file, not the whole template directory | Missing `.sty`/`.bst`/class files — won't compile, or silently falls back to default LaTeX formatting that doesn't match the venue's required style | Copy the entire `templates/<venue><year>/` directory into the paper repo, every file, every time |
+| Editing a `.sty`, `.bst`, or class file directly | Breaks the venue's required formatting in a way that may not be visible until a desk-rejection check catches it | Never edit style/class files — if the template genuinely seems wrong, that's a signal to re-fetch it from the official source, not to patch it locally |
+| Adding packages the base template didn't already include, without checking for conflicts | Package-load-order conflicts, redefined commands, broken cross-references — often only surfacing several sections later | Add a new package only when actually needed, and compile immediately after to confirm nothing broke |
+| Deleting the template's own placeholder/example content before the real content is ready | Loses the formatting reference the template author intended you to match (how a theorem environment, an author block, or a table caption is supposed to look) | Comment out placeholder content rather than deleting it, and remove the comments only once the paper is otherwise done |
+| Going long stretches between compiles while drafting | LaTeX errors compound — a missing brace three sections back can produce a confusing, unrelated-looking error near the end of the document, costing far more time to trace than if it were caught immediately | Compile after every section (`scripts/compile_check.sh`), not just at natural stopping points |
