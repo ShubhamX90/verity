@@ -45,6 +45,7 @@ Adapted from `claude-latex-paper-skill`'s `verify_paper.py`. These aren't conten
 - Leaked non-English characters (if the working conversation ever runs in a language other than English — the analogue of translation source-leakage).
 - Unresolved `[CLAIM NEEDS EVIDENCE]`, `PLACEHOLDER_`, or `TODO` markers left in what's presented as finished text.
 - `\cite{key}` with no matching `.bib` entry.
+- Leaked AI-tool-interface markup (`contentReference`/`oaicite`, `turn0search`-style tokens, `[cite: N]`, `grok_card`, `ppl-ai-file-upload`) — evidence that text was pasted from a chat interface without stripping its internal syntax. See `de-ai-slop.md` 1b for the full source list; added after a research pass into current AI-writing-tell documentation.
 
 ## Composing new text: see `de-ai-slop.md` Part 2
 
