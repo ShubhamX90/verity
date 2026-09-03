@@ -32,7 +32,6 @@ Every design decision in this repository traces back to that question.
 - [Usage](#usage)
 - [Repository layout](#repository-layout)
 - [Design principles](#design-principles)
-- [What isn't built yet](#what-isnt-built-yet)
 - [Provenance](#provenance)
 - [Contributing](#contributing)
 - [License](#license)
@@ -160,7 +159,7 @@ verity/
 │   ├── figures-tables-diagrams.md
 │   ├── reproducibility.md
 │   ├── mock-review.md
-│   ├── rebuttal.md             #   Deliberate stub — see "What isn't built yet"
+│   ├── rebuttal.md             #   Stub — not built yet
 │   └── prose-editing-policy.md
 ├── scripts/                    # 11 scripts, stdlib-only Python / portable Bash
 ├── venues/                     # 8 populated venue profiles: ICLR, NeurIPS, ICML, COLM, ACL, EMNLP, NAACL, AAAI
@@ -178,10 +177,6 @@ verity/
 **Never assume a venue's policy.** Page limits, disclosure rules, and reviewing obligations are loaded per session from a verified profile — never carried over from a different venue, a prior year, or general impression.
 
 **Never let urgency change behavior.** No workflow in this skill is deadline-aware. Verification discipline does not relax as a deadline approaches, because the skill has no representation of deadlines at all.
-
-## What isn't built yet
-
-**Rebuttal support** is intentionally a stub (`references/rebuttal.md`), not an oversight. It's the one part of the paper lifecycle this skill hasn't reached yet in real use, and building it prematurely — before there are real reviews to test it against — would mean shipping something unverified. The design decision is recorded for when that day comes: an issue-atomized data model (type, severity, reviewer stance, evidence needs) over a flat comment/response structure, with a hard rule that the skill only ever produces structured scaffolding for a human to write into, never auto-drafted persuasive rebuttal prose.
 
 ## Provenance
 
