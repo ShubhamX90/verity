@@ -62,16 +62,16 @@ The subtlety that makes both halves coexist without contradiction: **scanning is
 
 | Capability | What it does |
 |---|---|
-| **Citation verification** | Every citation is resolved via Semantic Scholar, CrossRef, and arXiv before it's written to `.bib`. Unverifiable → an explicit `PLACEHOLDER_` key and a disclosure to the user, never a fabricated entry. |
+| **Citation verification** | Every citation is resolved via Semantic Scholar, CrossRef, and arXiv before it's written to `.bib`. Unverifiable → an explicit `PLACEHOLDER_` key and a disclosure to the user, never a fabricated entry. A separate, complementary retrospective audit (`reference-audit.md`) checks every reference already in a near-final paper against its canonical source in one comprehensive pass, producing a structured VERIFIED/MALFORMED/NOT FOUND/UNVERIFIABLE report. |
 | **De-AI-slop detection** | A four-tier detection framework (lexical, structural, argument-level, heuristic) for AI-flavored prose — plus a *separate*, non-tiered discipline for how new text should be composed in the first place, so slop is avoided rather than generated-then-cleaned. |
 | **Non-native English polish** | Grammar and register correction (hyphenation, tense-by-authorship, article/preposition usage, acronym handling) — a distinct failure mode from AI-slop, run as an independent pass. |
-| **Writing craft** | Narrative-structure guidance synthesized from published advice (Gopen & Swan's reader-expectation principles, the five-sentence abstract formula, contribution-first introduction structure) for drafting new sections well from the outset. |
+| **Writing craft** | Narrative-structure guidance synthesized from published advice (Gopen & Swan's reader-expectation principles, the five-sentence abstract formula, contribution-first introduction structure) plus a research advisor's own guidance (a non-expert-accessibility rule for the abstract/introduction, a sentence-length cap, related-work survey-and-differentiate structure, results-by-research-question organization) for drafting new sections well from the outset. |
 | **Compression toolkit** | Seven concrete, on-demand operations for cutting a paper down to a venue's page limit — invoked only when actually over budget, never as routine editing. |
 | **Self-certification** | Every Tier B batch is checked by a fresh context with no memory of *why* the edit was proposed before it reaches you — a lightweight, always-on adversarial check against silent claim drift. |
 | **Table & figure generation** | Booktabs-formatted LaTeX tables generated from JSON/CSV results with correct per-column best-value direction (accuracy ↑, latency ↓ — handled independently, not a single global flag). Figures validated against DPI, vector-format, and colorblind-accessibility norms. |
 | **Backward traceability** | Every number in the paper can be hyperlinked back to the exact result artifact that produced it, with a mechanical check that distinguishes "verified clean" from "nothing was ever tagged" — a subtle but important distinction a naive implementation gets wrong. |
 | **Git-safe editing** | No script ever bulk-mutates a shared `.tex`/`.bib` file. Dirty-working-tree detection, staleness checks against a co-author's unpulled commits, and an explicit refusal to auto-resolve merge conflicts (they are inherently a Tier B content decision). |
-| **Mock review** | A formal per-venue reviewer simulation (distinct score schemas for ICLR, NeurIPS, ICML, ACL, AAAI, ICCV, CVPR) and a separate "constructive advisor" mode that produces a prioritized revision checklist instead of an accept/reject verdict. |
+| **Mock review** | A formal per-venue reviewer simulation (distinct score schemas for ICLR, NeurIPS, ICML, ACL, AAAI, ICCV, CVPR) and a separate "constructive advisor" mode that produces a prioritized revision checklist instead of an accept/reject verdict. Both modes check the paper against a list of well-documented, avoidable rejection reasons — missing ablations, an unvalidated LLM-judge, synthetic-only datasets, cross-section claim inconsistency, and more. |
 | **Reproducibility audit** | Scores a project against seed control, dependency pinning, data hashing, git-state cleanliness, and environment documentation — feeding directly into a venue's reproducibility statement. |
 
 ## Venue profiles
@@ -123,6 +123,7 @@ All scripts are stdlib-only Python 3 or POSIX-portable Bash — no `pip install`
 | `kpsewhich` | `readiness_check.sh` | Package-availability checks |
 | `detex` (optional) | `readiness_check.sh` | Word-count estimation (falls back to a cruder built-in method if absent) |
 | `curl` | `fetch_bibtex.sh` | Citation fetching |
+| [`aclpubcheck`](https://github.com/acl-org/aclpubcheck) (optional) | Pre-submission formatting check for the ACL family (ACL/EMNLP/NAACL) | Camera-ready-specific formatting rules `readiness_check.sh` can't see from `.tex` source alone |
 
 Every dependency degrades gracefully when absent — a missing tool produces a clearly labeled `SKIP`, never a silent gap presented as a pass.
 
@@ -159,6 +160,7 @@ verity/
 │   ├── figures-tables-diagrams.md
 │   ├── reproducibility.md
 │   ├── mock-review.md
+│   ├── reference-audit.md      #   Full retrospective reference-hallucination audit
 │   ├── rebuttal.md             #   Stub — not built yet
 │   └── prose-editing-policy.md
 ├── scripts/                    # 11 scripts, stdlib-only Python / portable Bash

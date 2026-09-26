@@ -43,6 +43,21 @@ Different framing: not a reviewer deciding accept/reject, but an advisor helping
 
 This is the mode to reach for when you want "what should I fix, in what order," not "would this get accepted."
 
+## Common, avoidable rejection reasons — check both modes against this list
+
+A checklist of specific, well-documented ways a paper gets rejected for reasons that have nothing to do with the underlying idea's merit. Mode 1 should reflect these in its Weaknesses section when applicable; Mode 2 should surface any hit as a Critical or Major item in the revision checklist, not bury it among minor wording notes.
+
+- **Formatting or styling problems, or a paper that's simply hard to read.** The mechanical side of this is `pre-submission-checklist.md`'s job, but a reviewer notices readability problems `chktex` doesn't catch too — see `writing-craft.md`'s Part 2 review pass.
+- **Highly relevant or very recent work not cited or compared against.** `find_uncited_claims.py` (`citation-verification.md`) flags candidate uncited claims; a mock review should separately ask whether the related-work section's clusters (`writing-craft.md`) are missing an obviously relevant recent paper, which is a literature-coverage question a citation scanner can't answer on its own.
+- **Hallucinated or malformed references** — see `reference-audit.md`. A single fabricated reference is disqualifying at most venues regardless of how strong the rest of the paper is.
+- **Novelty not stated clearly and consistently throughout the paper**, not just once in the introduction and then never reinforced.
+- **Experiments not rigorous enough**: too few datasets, too few models, no ablation study isolating each component's individual contribution, or too few baselines. If the paper claims a system with several components, check specifically whether an ablation exists for each one — a paper that claims four components and ablates none of them individually hasn't actually shown which parts matter.
+- **No real-world dataset** — evaluating only on synthetic or self-generated data, with nothing evaluated against a real-world source, is a specific and common weakness worth flagging by name rather than folding into a generic "evaluation could be broader."
+- **Missing real-world motivation** — no stated practical use case, relevance, or utility for the problem the paper defines, beyond "this is an interesting benchmark."
+- **Claims inconsistent across sections.** The single most mechanically checkable item on this list: does the abstract's headline number match the results section's actual number? A mismatch (abstract says 10%, results table says 8%) is a correctness problem, not a style one, and should be flagged as such regardless of which section is "wrong."
+- **A stated claim or research question that the experiments don't actually evaluate.** Check every research question named in the introduction (see `writing-craft.md`'s results-by-RQ structure) against whether the results section actually contains an experiment answering it.
+- **An LLM used as a judge or evaluator without first establishing its reliability.** This needs a human evaluation alongside it, with at least two human annotators, and the inter-annotator agreement reported both between the humans and between the humans and the LLM judge. A paper that reports only an LLM-judge score, with no human numbers to calibrate it against, should be flagged for this specifically, not just noted as "evaluation could be stronger."
+
 ## When to use which
 
 - Want a realistic accept/reject read and reviewer-style scores → Mode 1.

@@ -18,12 +18,13 @@ The clear trend across all of these: newer/larger models fabricate less (GPT-3.5
 - **CrossRef** — the BibTeX-fetch authority for anything with a DOI, via content negotiation (no API key needed; use a `mailto` param for the polite pool).
 - **arXiv** — native BibTeX export endpoint for preprints, preferred over parsing Semantic Scholar's arXiv metadata since it's the authoritative source for arXiv's own records.
 - **Google Scholar**: discovery-only if you use it manually; no official API, not wired into any script (scraping violates ToS).
+- **ACL Anthology** — for the ACL/EMNLP/NAACL family specifically, the Anthology page for a paper (`aclanthology.org/<id>`) carries an authoritative, directly downloadable BibTeX entry; prefer it over CrossRef/arXiv when the paper is in the Anthology at all.
 
 **Deliberately not included in v1**: DBLP and OpenAlex were considered in Phase 2 planning and set aside to keep the dependency surface small — noted here as the natural next addition if Semantic Scholar + CrossRef coverage proves insufficient for a specific reference (DBLP in particular has strong CS-conference coverage that Semantic Scholar sometimes misses). If you hit a paper that genuinely can't be verified through the current two sources, that's the signal to revisit this, not a reason to lower the verification bar.
 
 ## The workflow
 
-1. **Identify**: DOI > arXiv ID > publisher landing page, in that priority order.
+1. **Identify**: DOI > arXiv ID > publisher landing page, in that priority order. If the only version you initially find is an arXiv preprint, check whether it has since been formally published — the arXiv page's own "Journal reference" or "Comments" field, or one more search for the title plus "proceedings," "ACL Anthology," or "dblp" — and cite the peer-reviewed version instead once you find it. Don't cite an arXiv preprint when a published version exists; it's a weaker, less stable source, and the published version usually has a cleaner, authoritative BibTeX entry to fetch in the first place (see the ACL Anthology note above for that family specifically).
 2. **Search**: Semantic Scholar API (`scripts/fetch_bibtex.sh` and manual WebSearch/WebFetch as needed).
 3. **Cross-verify**: confirm the paper exists in **2 sources** — Semantic Scholar plus CrossRef (via the DOI, if there is one) or arXiv (if it's a preprint). One source alone is not enough to trust a bibliographic record.
 4. **Fetch BibTeX programmatically** — never type it by hand from what a landing page shows:
@@ -66,3 +67,7 @@ Run this after any citation work and before a pre-submission check (`pre-submiss
 ## Finding candidate uncited claims (Tier A, scan-only)
 
 `scripts/find_uncited_claims.py` flags sentences that look like they need a citation and don't have one nearby — related-work language ("recent work has shown..."), comparison claims ("outperforms X"), unattributed method/dataset proper nouns, unsupported numeric claims. This is a **scanner only** — it produces a list of candidate locations for you to look at, it never searches for or inserts a citation on its own. Turning a flagged location into an actual citation goes through the full six-step workflow above, ending at the Tier B approval gate.
+
+## Full retrospective reference audit (a separate, complementary workflow)
+
+Everything above governs verifying a citation *before* it's added to the paper, one citation at a time, as the paper is being written. For a comprehensive, one-time audit of every reference already in a near-final paper — checking each one's metadata against its canonical source, not just that a matching `.bib` entry exists — see `reference-audit.md`. Run that pass before submission, alongside (not instead of) `check_citations.py`'s static structural check and this file's per-citation workflow.

@@ -46,6 +46,7 @@ grouped, most-severe first, applied only after per-item approval, then re-verifi
 | Establish/build the active venue profile | `venue-profile.md` | — | — |
 | Add/verify a citation | `citation-verification.md` | `fetch_bibtex.sh`, `check_citations.py` | A (verify/fetch/normalize) → B (insert into text) |
 | Find candidate uncited claims | `citation-verification.md` | `find_uncited_claims.py` | A (scan only) |
+| Full retrospective reference audit (every citation in a near-final paper, checked against its canonical source) | `reference-audit.md` | — (research/reporting only) | A |
 | Polish prose / check for AI-slop | `prose-editing-policy.md` + `de-ai-slop.md` | `style_scan.py` | A (scan) → B (any rewrite) |
 | Fix non-native-English grammar/register (hyphen use, tense-by-authorship, articles/prepositions, acronyms) | `polish.md` | — (read-through, not scripted — see file for why) | A (scan) → B (any rewrite) |
 | Draft brand-new paper text | `de-ai-slop.md` (Part 2) | — | not tiered — a standing constraint on composition itself |
@@ -77,7 +78,7 @@ grouped, most-severe first, applied only after per-item approval, then re-verifi
 
 **Reviewing a co-author's diff.** `latex_diff.sh` against a specific commit/branch/tag, or the current working copy — true two-revision (`rev` vs. `rev`) diffing isn't supported; do it in two manual `git show` steps if genuinely needed (see `git-and-latex-safety.md`).
 
-**Before submitting.** Run `readiness_check.sh` (pre-submission checklist) against the active venue profile's page limit, and re-verify the profile itself against its live source pages if it's been a while since it was last checked — policy pages get revised.
+**Before submitting.** Run `readiness_check.sh` (pre-submission checklist) against the active venue profile's page limit, and re-verify the profile itself against its live source pages if it's been a while since it was last checked — policy pages get revised. Run a full retrospective reference audit (`reference-audit.md`) at least once before submission, separate from and in addition to the per-citation verification (`citation-verification.md`) that happens while writing. For the ACL family specifically, also run `aclpubcheck` (see `pre-submission-checklist.md`) about two days before the deadline and again immediately before submitting. None of this substitutes for personally reading the paper start to finish and verifying every line, number, and citation yourself — the mechanical checks catch what they catch, not everything.
 
 **Getting feedback before anyone else sees the paper.** Mock review (`mock-review.md`) — Mode 1 for a realistic accept/reject read, Mode 2 for a prioritized fix-it list. Both are safe to run anytime, don't modify the paper.
 

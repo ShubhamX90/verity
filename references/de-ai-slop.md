@@ -54,6 +54,14 @@ The word itself isn't always the problem — it's the word carrying no specific 
 | commendable | Vague-positive filler, confirmed at a 9.8× frequency increase specifically in post-2022 peer-review text (Kobak et al.–adjacent ICLR-review analysis) — a tell to watch for especially in mock-review output (`mock-review.md`), not just paper prose | Almost never in a paper's own self-description; in reviewer-voice output, always replace with the specific thing being commended |
 | meticulous(ly) | Vague-positive filler for "careful"/"thorough" | Only if paired with the specific procedure that was careful (e.g. "meticulous hyperparameter logging" naming what was logged) |
 | advancements (plural, as in "recent advancements") | Filler for "progress"/"work" — an independently confirmed excess-frequency word (Kobak et al.) | Keep if naming the specific advance; cut if it's just scene-setting |
+| utilize (verb) | Corporate/inflated-register stand-in for "use," same family as "leverage" | Never — always downgrade to "use" |
+| facilitate | Vague-action filler for "help"/"enable"/"let" | Only if paired with the specific mechanism of *how* it helps; otherwise cut |
+| ensure | A legitimate technical verb when the thing being ensured is a specific, checkable property ("ensures convergence," "ensures a fair comparison across seeds") — but also a common vague-reassurance filler in generic claims ("to ensure high performance") | Keep only in the specific-property sense; cut the vague-reassurance sense |
+| straightforward | Vague-positive filler asserting simplicity without showing it | Only if the sentence itself demonstrates the simplicity (a one-line description, a small equation) — otherwise the claim of simplicity is unearned |
+| "in the realm of" | Inflated register for "in"/"for," same family as "realm"/"landscape" above | Never |
+| "serves as a foundation (for)" | Vague importance-signaling, same family as "plays a crucial role" | Only if the specific thing built on it is named in the same sentence |
+| "in conclusion" / "to summarize" / "to conclude" (as a paragraph- or section-opener) | Throat-clearing meta-announcement — the conclusion heading already says this is the conclusion | Never — delete and open with the actual takeaway |
+| of course / absolutely (as sentence-openers or intensifiers) | Filler intensifiers signaling confidence rather than demonstrating it | Almost never — the claim itself should carry the confidence; "certainly" is the same family and already caught as a weak qualifier below |
 
 ### 1b. Structural / rhetorical tells
 
@@ -74,11 +82,24 @@ AI-generated prose defaults to triads (three examples, three properties, three c
 > *After:* "Our method trains in under 2 GPU-hours and scales linearly to 10M parameters." *(if "robust" wasn't actually backed by a specific robustness experiment, it shouldn't be in the list at all — this isn't a rewording fix, it's a claim-accuracy fix)*
 > *Why:* A padded third item is a content problem wearing a style problem's clothes — flag it as "is this claim actually supported," not just "reword this list."
 
-**Em-dash-driven dramatic pauses.**
-One em-dash per paragraph, used for a genuine aside, is fine. A string of them used to create false suspense before a reveal is a tell.
+**Em-dashes and en-dashes used as clause connectors.**
+Treat every em-dash or en-dash standing in for "because," "which," "and," or a dramatic pause as a candidate to rewrite with a comma, a period, or a subordinate clause instead — this is a stricter standard than "more than one per paragraph is suspicious," and applies even to a single instance. A dash used for a genuine, brief parenthetical aside (not a connector joining two clauses) is the one case this doesn't target.
 > *Before:* "The results were clear — and surprising — our baseline actually won."
 > *After:* "Our baseline outperformed all proposed methods, an unexpected result we discuss in Section 5."
 > *Why:* The dash-pause construction performs surprise rather than stating the finding; the rewrite states it directly and points to where it's explained.
+
+**Semicolons used to join two independent clauses. [scanned]**
+A semicolon connecting two clauses reads as a stylistic flourish that's easy to eliminate — replace it with a period (two sentences) or a comma plus a coordinating conjunction.
+> *Before:* "The baseline saturates early; our method keeps improving through the full training budget."
+> *After:* "The baseline saturates early. Our method keeps improving through the full training budget."
+> *Why:* Two short sentences carry the same contrast with less parsing effort than one joined by a semicolon.
+This does not target a semicolon separating items in a list whose entries already contain commas ("Boston, MA; New York, NY; Austin, TX") — that's a legitimate, different use `style_scan.py`'s over-broad flag can't distinguish mechanically, so triage it by hand the same way any other soft hit is triaged.
+
+**Colons used to introduce a sentence continuation, rather than a list or a definition.**
+A colon legitimately introduces an enumeration, a definition, or a table/figure caption ("Table 2: Results"). It should not splice a second independent clause onto the first as a lighter-weight substitute for "because" or "which shows that."
+> *Before:* "Performance drops sharply past 4K tokens: the model was never trained on longer sequences."
+> *After:* "Performance drops sharply past 4K tokens because the model was never trained on longer sequences."
+> *Why:* The subordinating conjunction states the relationship between the two clauses explicitly; the colon only implies it. Distinct from the colon-reveal pattern below, which is specifically about a punchy one-word payoff — this rule is about colon-as-clause-connector generally, dramatic payoff or not. Not mechanically scanned (a colon is legitimate almost everywhere else in academic prose); apply it by judgment, the same as 1c/1d below.
 
 **Throat-clearing meta-announcements. [scanned, partial]**
 Sentences that announce what a section is about to do, instead of doing it.
@@ -137,6 +158,11 @@ These need judgment, not a pattern match — flag them during a read-through, an
 
 - **Generic rather than specific motivation.** A motivation paragraph that would be equally at home in almost any paper in the subfield ("As deep learning models grow larger, efficiency becomes increasingly important") isn't wrong, but it's not doing any work either — see the portability heuristic in 1d.
 
+- **Defensive hedge-restatement** ("This means X, not Y," "This is A rather than B" tacked onto an ordinary claim as a reflexive qualifier). State what something is directly. A contrast clause earns its place only when the contrast itself is the point being made — a real, specific misreading the paper has reason to expect a reader to make — not as a habitual hedge appended to every claim.
+  > *Before:* "The model generalizes across domains — this means it transfers to new tasks, not that it memorizes the training distribution."
+  > *After:* "The model transfers to new tasks it was not trained on."
+  > *Why:* The "not Y" clause defends against a misreading nobody was making; dropping it states the claim directly. Keep the contrast only when the paper is actually arguing against a specific, real alternative reading.
+
 - **Unfalsifiable absolute gap-statement claims — an academic-writing-specific risk not covered by any of the generic tells above.** "No research has examined X," "little is known about Y," "no prior work has investigated Z" are stock phrases for introducing a research gap (documented as a recognized formulaic pattern by CASRAI's discourse-marker guidance), and LLM-assisted drafting leans on them by default because they're a safe-sounding way to motivate a contribution. The specific danger in a peer-reviewed submission: an absolute claim like "no research has examined X" is trivially falsifiable by a single counter-citation from a reviewer who happens to know the literature better than the drafting pass did — this isn't just an AI-slop style problem, it's a claim-accuracy problem that can cost the paper credibility on the spot. Every absolute gap claim needs an actual literature check before it ships, not just a rewrite.
   > *Before:* "No prior work has examined the interaction between sparse attention and quantization."
   > *After:* "Prior work on sparse attention (Smith et al.) and on quantization (Jones et al.) has proceeded independently; we are not aware of an existing study of their interaction, though we did not conduct an exhaustive search of the quantization literature specifically."
@@ -180,7 +206,7 @@ This section is not a scan-then-approve workflow. It applies the moment new sent
 
 ## How this maps to tooling
 
-- **1a (lexical)** and the greppable half of **1b (structural)** are what `scripts/style_scan.py` actually implements — every hit it reports is a candidate, never an automatic fix, per the tier model. This now includes the AI-tool-artifact check (the one genuine hard failure in this document), the colon-reveal and empty-opener patterns, and a per-file sentence-burstiness score.
+- **1a (lexical)** and the greppable half of **1b (structural)** are what `scripts/style_scan.py` actually implements — every hit it reports is a candidate, never an automatic fix, per the tier model. This now includes the AI-tool-artifact check (the one genuine hard failure in this document), the colon-reveal and empty-opener patterns, a semicolon flag, a per-sentence length check (over ~25 words — see `writing-craft.md`'s register/length-cap note), and a per-file sentence-burstiness score. Fixed per an advisor-guidance-driven pass: "robust" and "comprehensive" were both documented in the 1a table above but missing from the actual regex — the table described more than the script checked. Both are implemented now.
 - **1c (argument-level)** and **1d (heuristics)** are not implemented as patterns anywhere, deliberately — they need a read-through and judgment about what the paper is actually claiming and supporting, which a regex cannot assess. Apply them by hand (or have the assistant apply them while reading a section, surfacing findings the same way as any Tier B item) rather than expecting a scan to catch them.
 - **Part 2** has no script at all. It's referenced whenever the assistant is composing new sentences for the paper — a drafting discipline, not a gate that runs after the fact.
 

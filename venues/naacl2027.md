@@ -48,4 +48,4 @@ NAACL's own CFP, as fetched, does not enumerate its own separate list of desk-re
 
 ## Template
 
-`templates/acl-style-files/` — same shared *ACL family package used for ACL, EMNLP, and NAACL, fetched from `github.com/acl-org/acl-style-files` (master branch) on 2026-09-03. See `venues/acl2026.md`'s Template section for the file list; nothing NAACL-specific here — copy the whole directory when starting a new paper.
+`templates/acl-style-files/` — same shared *ACL family package used for ACL, EMNLP, and NAACL, fetched from `github.com/acl-org/acl-style-files` (master branch) on 2026-09-03. See `venues/acl2026.md`'s Template section for the file list; nothing NAACL-specific here — copy the whole directory when starting a new paper. Also run `aclpubcheck` before submitting — see `venues/acl2026.md`'s Template section for the cadence (two days before the deadline, and again right before submission).

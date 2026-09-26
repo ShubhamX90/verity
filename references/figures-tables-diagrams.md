@@ -19,6 +19,10 @@
 
 Checking is Tier A. **Generating a new figure is a bigger lift** (the source material's approach is a 3-phase pipeline: query expansion → code-gen with an execution-retry loop → a VLM visual-refinement loop) — not built in this v1 pass. If you want figure generation (not just checking) added, that's a follow-up, not something silently included here. Regardless of whether generation is automated later, **what a figure shows is a content decision (Tier B)** — a newly generated figure needs your review before it goes into the paper, the same as any other new claim.
 
+**Budget real time for the paper's method/overview figure specifically.** Plan on something like a full day for the one or two visualizations meant to explain the method or the whole paper, not the few minutes an off-the-shelf request to an image generator takes. A generated illustration that wasn't built to show the actual mechanism — data flow, stages, what varies between conditions — rarely earns its place next to a real results figure, however polished it looks. See `writing-craft.md`'s methodology-structure note for when a diagram earns inclusion in the first place.
+
+**Every figure and table needs to actually appear in the reader's path, not just exist in the file.** `scripts/readiness_check.sh` checks that every figure/table `\label` is referenced by at least one `\ref`/`\Cref`/`\autoref` in the body text, and that an `\appendix` (if the paper has one) is pointed to at least once from the main text — see `pre-submission-checklist.md`. A figure or table nobody's prose ever points to is either dead weight or a citation the author forgot to write.
+
 ## Tables
 
 `scripts/table_from_data.py` converts JSON/CSV results into booktabs-formatted LaTeX (bold-best-value, `$\pm$` for standard deviations, `table*` for wide two-column tables). Per the Phase 1 audit, the source script's `--significance` flag was dead code (parsed, never implemented) — dropped in this port rather than silently shipped as a no-op. If you want significance-star annotations, that's new work, not a restored feature.

@@ -28,11 +28,15 @@ Findings are grouped, most-severe first, and only the items you accept are appli
 
 One deliberate change from `paper-writing-skill`'s original grep-based gate, which `de-ai-slop.md`'s detection half is adapted from: **no rule in this list is a hard ban.** Every hit is a flagged suggestion for you to accept, reject, or ignore — including passive voice, which is flagged like anything else below rather than banned.
 
-- Em-dashes (more than one per paragraph)
+- Em-dashes and en-dashes used as clause connectors — every instance is a candidate, not just when there's more than one per paragraph (a stricter standard than earlier phrasing here implied; see `de-ai-slop.md` 1b)
+- Semicolons used to join two independent clauses (rewrite with a period, or a comma plus a coordinating conjunction) — see `de-ai-slop.md` 1b for the legitimate-list-separator carve-out this doesn't target
+- Colons used to introduce a sentence continuation rather than a list/definition — not mechanically scanned (too easily confused with legitimate colon use), apply by judgment per `de-ai-slop.md` 1b
+- Sentences over roughly 25 words — a candidate to split into two or three shorter ones at a natural clause boundary, per `writing-craft.md`'s register/length-cap note
 - AI-overused vocabulary and structural tells from `de-ai-slop.md` Parts 1a/1b
-- Throat-clearing openers ("It is worth noting that," "First and foremost," "Moreover," "Furthermore" as sentence-openers)
+- Throat-clearing openers ("It is worth noting that," "First and foremost," "Moreover," "Furthermore," "In conclusion," "To summarize" as sentence-openers)
 - Wordiness ("in order to" → "to," "the fact that," "due to the fact that")
-- Weak qualifiers ("rather," "very," "quite," "somewhat," "fairly")
+- Weak qualifiers ("rather," "very," "quite," "somewhat," "fairly," "absolutely")
+- Defensive hedge-restatement ("this means X, not Y," "this is A rather than B" tacked onto an ordinary claim) — judgment-only, see `de-ai-slop.md` 1c
 - **Passive voice** — flagged, never auto-rewritten. ML methods and experiments sections routinely and correctly use passive voice ("the model is trained on...", "images are resized to..."); a zero-tolerance ban (as `paper-writing-skill` originally specifies it) fights standard field register and was explicitly dropped in Phase 2. Passive-voice hits appear in the scan output like any other Minor-severity item, and most will be correctly rejected rather than accepted.
 - Term drift — the same concept named two different ways across sections.
 

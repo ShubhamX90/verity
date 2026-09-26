@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # readiness_check.sh — composite pre-submission readiness check. Tier A,
 # entirely read-only: assembles four checks that no single source shipped
-# as one tool (packages, citations, lint, structure) plus an anonymization
-# scan. See references/pre-submission-checklist.md for what each section
+# as one tool (packages, citations, lint, structure), a figure/table/appendix
+# cross-reference check, and an anonymization scan. See
+# references/pre-submission-checklist.md for what each section
 # means and what it deliberately does not check (submission-portal account
 # requirements, reciprocal reviewing registration — account/logistics
 # matters outside a repo-scoped tool's reach).
@@ -146,7 +147,57 @@ else
   report PASS "Structure" "$STRUCTURE_DETAIL"
 fi
 
-# ---- 5. Anonymization -------------------------------------------------------
+# ---- 5. Figure/table/appendix cross-references -----------------------------
+# Per an advisor-guidance-driven pass: every figure and table should be
+# referenced by name in the body text at least once, and an appendix (if the
+# paper has one) should be pointed to from the main text at least once. This
+# is a mechanical candidate list, same spirit as check_citations.py's
+# unused-.bib-entry check — a false negative is possible if a label is
+# referenced only through a custom cross-reference macro this doesn't
+# recognize (only \ref/\Cref/\cref/\autoref are checked for).
+FIGTAB_LABELS="$(awk '
+  /\\begin\{(figure|table)\*?\}/ { in_env=1 }
+  in_env && match($0, /\\label\{[^}]+\}/) {
+    print substr($0, RSTART+7, RLENGTH-8)
+  }
+  /\\end\{(figure|table)\*?\}/ { in_env=0 }
+' "$FILE")"
+
+UNCITED_FIGTAB=()
+if [[ -n "$FIGTAB_LABELS" ]]; then
+  while IFS= read -r lbl; do
+    [[ -z "$lbl" ]] && continue
+    if ! grep -qE "\\\\(ref|Cref|cref|autoref)\{${lbl}\}" "$FILE"; then
+      UNCITED_FIGTAB+=("$lbl")
+    fi
+  done <<< "$FIGTAB_LABELS"
+fi
+
+APPENDIX_DETAIL=""
+if grep -qE '\\appendix\b' "$FILE"; then
+  # Note: awk's BRE/ERE dialect on some platforms (e.g. macOS's built-in
+  # awk) doesn't support \b, unlike grep -E above — hence the
+  # ([^a-zA-Z]|$) alternative here instead of \b, to stay portable.
+  MAIN_BODY="$(awk '/\\appendix([^a-zA-Z]|$)/{exit} {print}' "$FILE")"
+  if ! echo "$MAIN_BODY" | grep -qiE '\bappendix\b'; then
+    APPENDIX_DETAIL="the paper has an \\appendix but the main text never points to it (e.g. 'see Appendix A')"
+  fi
+fi
+
+if [[ ${#UNCITED_FIGTAB[@]} -eq 0 && -z "$APPENDIX_DETAIL" ]]; then
+  report PASS "Fig/table refs" "every figure/table label is \\ref'd somewhere in the body text"
+else
+  DETAIL=""
+  if [[ ${#UNCITED_FIGTAB[@]} -gt 0 ]]; then
+    DETAIL="never \\ref'd anywhere: ${UNCITED_FIGTAB[*]}"
+  fi
+  if [[ -n "$APPENDIX_DETAIL" ]]; then
+    DETAIL="${DETAIL:+$DETAIL; }$APPENDIX_DETAIL"
+  fi
+  report FAIL "Fig/table refs" "$DETAIL"
+fi
+
+# ---- 6. Anonymization -------------------------------------------------------
 ANON_HITS=()
 AUTHOR_FIELD="$(grep -oE '\\author\{[^}]*\}' "$FILE" | head -1)"
 if [[ -n "$AUTHOR_FIELD" ]] && ! echo "$AUTHOR_FIELD" | grep -qiE 'anonymous|anonymized'; then

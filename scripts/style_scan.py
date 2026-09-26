@@ -20,8 +20,9 @@ Reports two kinds of findings, clearly separated:
   practitioner discourse, structural-pattern documentation) — see
   de-ai-slop.md's "Research basis and version awareness" section for full
   citations and confidence grading. Includes a whole-file sentence-length
-  "burstiness" score (de-ai-slop.md 1d item 4) alongside the per-line
-  pattern matches.
+  "burstiness" score (de-ai-slop.md 1d item 4), a per-sentence length flag
+  (over ~25 words, per writing-craft.md's register/length-cap note), and a
+  semicolon flag, alongside the per-line pattern matches.
 
 This script never rewrites anything. It only ever prints a report.
 
@@ -74,13 +75,19 @@ AI_WORDS_RE = re.compile(
     r"\b(leverag(?:e|es|ed|ing)|delve[sd]?(?: into)?|pivotal|paramount|"
     r"underscor(?:e|es|ed|ing)|seamless(?:ly)?|holistic(?:ally)?|"
     r"cutting-edge|groundbreaking|paradigm|realm|landscape|burgeoning|"
-    r"multifaceted|nuanced|unprecedented|showcas(?:e|es|ed|ing)|intricate|"
-    r"synerg(?:y|istic|ies)|notably|"
+    r"multifaceted|nuanced|unprecedented|showcas(?:e|es|ed|ing)|intricate|robust(?:ly)?|"
+    r"synerg(?:y|istic|ies)|notably|comprehensive|"
     # Added from peer-reviewed excess-vocabulary research (Kobak et al.
     # Science Advances 2025; Juzek & Ward COLING 2025) — de-ai-slop.md 1a.
     r"elucidat(?:e|es|ed|ing)|encompass(?:es|ed|ing)?|streamlin(?:e|es|ed|ing)|"
     r"unveil(?:s|ed|ing)?|garner(?:s|ed|ing)?|boast(?:s|ed|ing)?|"
-    r"commendabl[ey]|meticulous(?:ly)?|transformative|advancements)\b",
+    r"commendabl[ey]|meticulous(?:ly)?|transformative|advancements|"
+    # Added per a research advisor's own writing-guidance pass — de-ai-slop.md
+    # 1a. "ensure" over-catches on purpose (a legitimate technical verb in
+    # some sentences, vague reassurance in others) — a candidate, not a ban,
+    # same as "robust"/"significant" above.
+    r"utiliz(?:e|es|ed|ing)|facilitat(?:e|es|ed|ing)|straightforward|"
+    r"ensur(?:e|es|ed|ing))\b",
     re.IGNORECASE,
 )
 
@@ -90,9 +97,17 @@ AI_PHRASES_RE = re.compile(
     r"\bunlock(?:s|ed|ing)? the potential\b|\bpave(?:s|d)? the way\b|"
     r"\bshed(?:s)? light on\b|\bplays? a (?:crucial|pivotal) role\b|"
     r"\ba testament to\b|\bparadigm shift\b|\bevolving landscape\b|"
-    r"\bit is (?:worth noting|important to note) that\b",
+    r"\bit is (?:worth noting|important to note) that\b|"
+    r"\bin the realm of\b|\bserves? as a foundation\b|\bof course\b",
     re.IGNORECASE,
 )
+
+# Semicolon used to join two independent clauses — de-ai-slop.md 1b.
+# Deliberately over-broad: also matches a semicolon legitimately separating
+# comma-containing list items ("Boston, MA; New York, NY"), which this
+# script can't distinguish mechanically. A candidate for a human to triage,
+# same spirit as every other soft hit here.
+SEMICOLON_RE = re.compile(r";")
 
 # Sentence-initial connective throat-clearing — de-ai-slop.md Part 1b.
 # Anchored to line start (a real limitation: misses a mid-paragraph sentence
@@ -100,7 +115,8 @@ AI_PHRASES_RE = re.compile(
 # for the human-judgment fallback this doesn't replace).
 THROAT_CLEARING_RE = re.compile(
     r"^(?:Moreover|Furthermore|Additionally|Notably|Importantly|Indeed|"
-    r"Ultimately|Crucially|In turn|That said|First and foremost)\b",
+    r"Ultimately|Crucially|In turn|That said|First and foremost|"
+    r"In conclusion|To summarize|To conclude|In summary)\b",
     re.MULTILINE,
 )
 
@@ -183,7 +199,7 @@ WORDINESS_RE = re.compile(
 )
 
 WEAK_QUALIFIER_RE = re.compile(
-    r"\b(rather|very|pretty|quite|somewhat|fairly|certainly)\b", re.IGNORECASE
+    r"\b(rather|very|pretty|quite|somewhat|fairly|certainly|absolutely)\b", re.IGNORECASE
 )
 
 # Deliberately over-broad — a candidate list for a human to triage, same
@@ -239,6 +255,40 @@ def compute_burstiness(text: str) -> tuple[float | None, int]:
     return stdev / mean, len(lengths)
 
 
+# A research advisor's own writing-guidance pass (see writing-craft.md's
+# "Register: full sentences, and a sentence-length cap") flags any sentence
+# over ~25 words as a candidate to split at a natural clause boundary. This
+# is a soft, approximate check by construction, same caveats as burstiness
+# above: abbreviations like "e.g." or "et al." can spuriously end or fail to
+# end a sentence, and LaTeX line-wrapping is flattened to spaces first so a
+# sentence can be measured across source lines.
+LONG_SENTENCE_WORD_LIMIT = 25
+SENTENCE_END_RE = re.compile(r"[.!?]+(?=\s+[A-Z]|\s*$)")
+
+
+def find_long_sentences(text: str) -> list[tuple[int, int, str]]:
+    """Returns (line, word_count, snippet) for each sentence over the word
+    limit. `flat` replaces newlines with spaces one-for-one (same length as
+    `text`) so `line_of(text, start)` still resolves correctly; math/command
+    stripping happens only on the already-located, locally-cleaned copy used
+    for word-counting, not on `flat` itself, to keep that position mapping
+    intact."""
+    flat = text.replace("\n", " ")
+    results: list[tuple[int, int, str]] = []
+    start = 0
+    for m in SENTENCE_END_RE.finditer(flat):
+        end = m.end()
+        raw_sentence = flat[start:end]
+        cleaned = MATH_MODE_RE.sub(" ", raw_sentence)
+        cleaned = TEX_COMMAND_WITH_ARG_RE.sub(" ", cleaned)
+        words = cleaned.split()
+        if len(words) > LONG_SENTENCE_WORD_LIMIT:
+            snippet = " ".join(raw_sentence.split()[:8]) + " ..."
+            results.append((line_of(text, start), len(words), snippet))
+        start = end
+    return results
+
+
 def scan_file(path: Path, bib_keys: set[str]) -> tuple[list[str], list[str]]:
     raw = path.read_text(encoding="utf-8", errors="replace")
     text = strip_tex_comments(raw)
@@ -261,7 +311,10 @@ def scan_file(path: Path, bib_keys: set[str]) -> tuple[list[str], list[str]]:
         hard.append(f"{path}:{line_of(text, m.start())}: leaked AI-tool markup artifact: '{m.group()}' — text was pasted from a chat interface without stripping its internal syntax")
 
     for m in EM_DASH_RE.finditer(text):
-        soft.append(f"{path}:{line_of(text, m.start())}: em-dash")
+        soft.append(f"{path}:{line_of(text, m.start())}: em-dash/en-dash — treat as a clause-connector candidate, not just when there's more than one per paragraph (de-ai-slop.md 1b)")
+
+    for m in SEMICOLON_RE.finditer(text):
+        soft.append(f"{path}:{line_of(text, m.start())}: semicolon — flag as a clause-connector candidate (de-ai-slop.md 1b); not flagged if it's separating comma-containing list items")
 
     for m in AI_WORDS_RE.finditer(text):
         soft.append(f"{path}:{line_of(text, m.start())}: AI-flavored word: '{m.group()}' — swap only if it carries no precise technical meaning here")
@@ -318,6 +371,9 @@ def scan_file(path: Path, bib_keys: set[str]) -> tuple[list[str], list[str]]:
     n_emph = len(EMPHASIS_RE.findall(text))
     if n_emph > 3:
         soft.append(f"{path}: {n_emph} bold/italic emphasis commands in body text — consider whether sentence position could carry the emphasis instead")
+
+    for ln, n_words, snippet in find_long_sentences(text):
+        soft.append(f"{path}:{ln}: sentence runs ~{n_words} words (over the ~{LONG_SENTENCE_WORD_LIMIT}-word guideline) — look for a natural place to split it: '{snippet}'")
 
     cv, n_sentences = compute_burstiness(text)
     if cv is not None and cv < BURSTINESS_LOW_THRESHOLD:
